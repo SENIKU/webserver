@@ -100,7 +100,9 @@ const register = async(req, res) =>{
             data : finduser
         });
     } catch (error) {
-        return res.status(bad).json(error);
+        return res.status(bad).json({
+            message : error.message
+        });
     }
 }
 
