@@ -2,17 +2,20 @@ require("dotenv").config();
 const { notfound, forbiden, servererror } = require("../controllers/statuscode");
 const { User} = require("../models/users");
 
-const roleadmin = async(req, res, next)=>{
-    const userId = req.users.id;
 
-    const users = await User.findbyId(userId).excc();
+const roleadmin = async(req, res, next)=>{
+  try {
+    const userId = req.user.sub;
+    const users = await User.findById(userId).exec();
+
+    req.user = userId;
+   
 
     if(!users) {
        return res.status(notfound).json({
         message : "User tidak ditemukan"
        });
     }
-    console.log("ini role = ", users.role);
 
     if(users.role !== "admin"){
         return res.status(forbiden).json({
@@ -20,38 +23,47 @@ const roleadmin = async(req, res, next)=>{
         })
     };
     next();
+  } catch (error) {
+    console.error(error);
+      return res.status(servererror).json({ 
+        status: "failed", 
+        message: error.message
+    });
+  }
 }
 
-const verifyrole = async(req,res ,next) =>{
-    const userId = req.users.id;
-    try {
-      const user = await User.findById(userId).exec();
+const verifyuser = async(req,res ,next) =>{
+  try {
+      const userId = req.user.sub;
+      const users = await User.findById(userId).exec();
   
-      if (!user) {
+      req.user = userId;
+      console.log("ini masuk sebagai role x : ", userId);
+
+      if (!userId) {
+        return res.status(401).json({ msg: "Mohon Login ke akun Anda!" });
+    }
+
+      if (!users) {
         return res.status(notfound).json({ 
             status: "failed", 
             message: "User not found " 
         });
       }
-  
-      if (user.role === "admin") {
-        next();
-      } else {
-        return res.status(forbiden).json({
-          status: "failed",
-          message: "You do not have admin permission",
-        });
-      }
+      
+      req.userId = users._id;
+      req.role = users.role;
+      next();
     } catch (err) {
       console.error(err);
       return res.status(servererror).json({ 
         status: "failed", 
-        message: "Server Error" 
+        message: err.message
     });
     }
 }
 
 module.exports = {
     roleadmin,
-    verifyrole
+    verifyuser
 }

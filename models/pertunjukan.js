@@ -1,6 +1,15 @@
-const {mongoose} = require("mongoose");
+const mongoose = require("mongoose");
 
-const PertunjukanSchema = new mongoose.Schema({
+const Schema = mongoose.Schema;
+const ObjectId = mongoose.Types.ObjectId;
+
+const PertunjukanSchema = new Schema({
+    _id : {
+      type: String,
+      default: function () {
+          return new ObjectId().toString()
+      }
+    },
     judul : {
         type: String,
         trim: true,
@@ -11,26 +20,36 @@ const PertunjukanSchema = new mongoose.Schema({
         trim: true,
         required: [true, "please add content"],
     },
+    provinsis : [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "provinsi",
+    }],
     image: {
         type: String,
-        default: "https://aseanyouthforum.org/wp-content/uploads/2019/03/cropped-Logo-Asean-Youth-Forum-HR-01.png"
     },
-    comments : [{
-        user : {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "users",
-        },
-        comment : {
-            type : String
-        },
-        createdAt : {
-            type : Date,
-            default : Date.now
-        }
-    }],
-})
+    // comments : [{
+    //     user : {
+    //         type: mongoose.Schema.Types.ObjectId,
+    //         ref: "users",
+    //     },
+    //     comment : {
+    //         type : String
+    //     },
+    //     createdAt : {
+    //         type : Date,
+    //         default : Date.now
+    //     }
+    // }],
+},{
+    timestamps: {
+      createdAt: 'created_at', // Use `created_at` to store the created date
+      updatedAt: 'updated_at' // and `updated_at` to store the last updated date
+    }
+  }
+)
 
-const pertunjukan = mongoose.model("pertunjukan", PertunjukanSchema);
+const Pertunjukan = mongoose.model("pertunjukan", PertunjukanSchema);
+
 module.exports = {
-    pertunjukan
+    Pertunjukan
 }

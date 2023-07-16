@@ -10,7 +10,7 @@ const auth = async(req, res, next) =>{
     if(token == null){
         response ={ 
             status : "ERROR",
-            message : "No Token, Authorization Failed"
+            message : "Please, Log Back In"
         };
         return res.status(unauthorized).json(response);
     }
@@ -19,12 +19,13 @@ const auth = async(req, res, next) =>{
         if(error){
             response = {
                 status : "Error",
-                message : error
+                message : error.message
             }
             return res.status(unauthorized).json(response);
         }
 
         req.user = user;
+        console.log("ini masuk sebagai role : ",user);
         next();
     })
 }

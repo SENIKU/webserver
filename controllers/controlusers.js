@@ -16,7 +16,7 @@ const getalluser = async (req, res) =>{
     } catch (error) {
         res.status(bad).send({
             message : error.message
-        })
+        });
     }
 }
 
