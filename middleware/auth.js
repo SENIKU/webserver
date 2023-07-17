@@ -19,13 +19,13 @@ const auth = async(req, res, next) =>{
         if(error){
             response = {
                 status : "Error",
-                message : error.message
+                message : "Please, LogIn"
             }
             return res.status(unauthorized).json(response);
         }
 
         req.user = user;
-        console.log("ini masuk sebagai role : ",user);
+        // console.log("ini masuk sebagai role : ",user);
         next();
     })
 }

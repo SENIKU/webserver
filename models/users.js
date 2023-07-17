@@ -3,6 +3,11 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const ObjectId = mongoose.Types.ObjectId;
 
+const validateEmail = function(email) {
+    const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    return regex.test(email);
+  };
+
 const UserSchema = new Schema({
     _id : {
       type: String,
@@ -22,7 +27,9 @@ const UserSchema = new Schema({
     email : {
         type: String,
         required: [true, "Please add an email"],
+        trim : true,
         unique: true,
+        validate: [validateEmail, "Please enter a valid email"]
     },
     password : {
         type: String,

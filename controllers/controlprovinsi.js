@@ -1,5 +1,5 @@
 const {Provinsi} = require("../models/provinsi");
-const { ok, bad, created } = require("./statuscode");
+const { ok, bad, created, notfound } = require("./statuscode");
 require("dotenv").config();
 
 const getallprovinsi = async (req, res) =>{
@@ -15,6 +15,30 @@ const getallprovinsi = async (req, res) =>{
         });
     }
 };
+
+const getidprovinsi = async (req, res) =>{
+    try {
+        const provinsi = await Provinsi.findById({
+            _id : req.params.id
+        });
+
+        if(!provinsi){
+            return res.status(notfound).json({
+                message : "data provinsi not Found"
+            });
+        };
+
+        const response = {
+            data : provinsi
+        }
+
+        res.status(ok).json(response);
+    } catch (error) {
+        res.status(bad).send({
+            message : error.message
+        })
+    }
+}
 
 const createprovinsi = async (req, res) =>{
     try {
@@ -35,7 +59,10 @@ const createprovinsi = async (req, res) =>{
         });
     }
 }
+
+
 module.exports = {
     getallprovinsi,
-    createprovinsi
+    getidprovinsi,
+    createprovinsi,
 }

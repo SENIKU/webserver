@@ -125,7 +125,7 @@ const deleteuser = async(req, res) =>{
             _id : req.params.id
         });
         if(usersdelete){
-            res.status(ok).json({
+           return res.status(ok).json({
                 message : "Delete Users Successfuly",
                 img : hapusimg
             });
