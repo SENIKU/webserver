@@ -1,5 +1,5 @@
 const { User } = require("../models/users");
-const { bad, created, notfound, ok } = require("./statuscode");
+const { bad, created, notfound, ok, notallowed } = require("./statuscode");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
@@ -29,11 +29,11 @@ const register = async(req, res) =>{
 
         // jika user sudah ada
         if(existedEmail){
-            return res.status(bad).json({
+            return res.status(notallowed).json({
                 message : "Email already exist. Please Login!"
             });
         }
-
+        
         // mencari data user berdasarkan username
         const existedusername = await User.findOne({
            username : req.body.username 
@@ -41,11 +41,11 @@ const register = async(req, res) =>{
 
         // jika user sudah ada
         if(existedusername){
-            return res.status(bad).json({
+            return res.status(notallowed).json({
                 message : "username already exist. please re-enter username!"
             });
         }
-
+       
         // jika nama kosong
         if(!fullname){
             return res.status(bad).json({
@@ -76,6 +76,7 @@ const register = async(req, res) =>{
         // encrypt password
         const encryptedPassword = bcrypt.hashSync(password, SALT);
 
+        // cloudinary
         const img = 'https://res.cloudinary.com/duw2tc97f/image/upload/v1689423319/seniku/profile/wgm5koobkuanlt5rmg4u' ;
 
         const cloudinaryResponse = await cloudinary.uploader.upload(img , {folder: "seniku/profile", public_id: new Date().getTime() });

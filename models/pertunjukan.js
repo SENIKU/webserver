@@ -15,31 +15,39 @@ const PertunjukanSchema = new Schema({
         trim: true,
         required: [true, "Please add judul"],
     },
-    content : {
+    jenis : {
         type: String,
         trim: true,
-        required: [true, "please add content"],
+        required: [true, "Please add jenis"],
     },
-    provinsis : [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "provinsi",
-    }],
+    content : {
+        type: String,
+        required: [true, "Please add content"],
+    },
+    provinsi : {
+        type: String,
+        trim: true,
+        required: [true, "Please add provinsi"],
+    },
+    suka : {
+        type : Boolean,
+    },
     image: {
         type: String,
     },
-    // comments : [{
-    //     user : {
-    //         type: mongoose.Schema.Types.ObjectId,
-    //         ref: "users",
-    //     },
-    //     comment : {
-    //         type : String
-    //     },
-    //     createdAt : {
-    //         type : Date,
-    //         default : Date.now
-    //     }
-    // }],
+    comments : [{
+        user : {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "users",
+        },
+        comment : {
+            type : String
+        },
+        createdAt : {
+            type : Date,
+            default : Date.now
+        }
+    }],
 },{
     timestamps: {
       createdAt: 'created_at', // Use `created_at` to store the created date

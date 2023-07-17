@@ -6,7 +6,7 @@ const { userall, userid, userupdate, userdelete } = require("./routes/routeuser"
 const { newakun, loginakun } = require("./routes/routeauth");
 const upload = require("express-fileupload");
 const { provinsiall, provinsicreate } = require("./routes/routeprovinsi");
-const { pertunjukanall, createpertunjukan } = require("./routes/routepertunjukan");
+const { pertunjukanall, createpertunjukan, pertunjukanbyid, deletepertunjukan, updatepertunjukan } = require("./routes/routepertunjukan");
 
 const app = express();
 const port = process.env.PORT;
@@ -33,7 +33,7 @@ app.use(newakun, loginakun);
 app.use(provinsiall, provinsicreate);
 
 // pertunjukan
-app.use(pertunjukanall, createpertunjukan);
+app.use(pertunjukanall, pertunjukanbyid , createpertunjukan, updatepertunjukan, deletepertunjukan);
 
 app.listen(port,'0.0.0.0', function(){
     console.log(`Your application is running on the port ${port}`)
