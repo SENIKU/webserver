@@ -1,6 +1,6 @@
 const { cloudinaryconf } = require('../config/cloudinary');
 const { Pertunjukan } = require('../models/pertunjukan');
-const { bad, ok, created, notfound, servererror } = require('./statuscode');
+const { bad, ok, created, notfound } = require('./statuscode');
 require('dotenv').config();
 
 const cloudinary = require('cloudinary').v2;
@@ -9,16 +9,8 @@ cloudinaryconf();
 
 const getallpertunjukan = async(req,res) =>{
     try {
-        const { search } = req.query;
-        let query = {};
-        if (search) {
-            query.title = { $regex: search, $options: `i` };
-        }
-
-        const pertunjukan = await Pertunjukan.find(query)
-        .sort({ date: -1 })
-        .populate("comments.users", "fullname imgprofile");
-
+        const pertunjukan = await Pertunjukan.find({})
+        .populate('users', "fullname -_id");
         const response = {
             data : pertunjukan
         }
@@ -33,9 +25,9 @@ const getallpertunjukan = async(req,res) =>{
 
 const getidpertunjukan = async(req,res) =>{
     try {
-        const pertunjukan = await Pertunjukan.findById(req.params.id)
-        .sort({ date: -1 })
-        .populate("comments.users", "fullname imgprofile");
+        const pertunjukan = await Pertunjukan.findById({
+            _id : req.params.id
+        });
 
         if(!pertunjukan){
             return res.status(notfound).json({
@@ -68,9 +60,8 @@ const pertunjukancreate = async(req,res) =>{
             judul : req.body.judul,
             jenis : req.body.jenis,
             content : req.body.content,
-            provinsi : req.body.provinsi,
-            linkyt : req.body.linkyt,
-            image : imgpertunjukan
+            provinsis : req.body.provinsis,
+            image : imgpertunjukan,
         });
 
         const response = {
@@ -81,6 +72,9 @@ const pertunjukancreate = async(req,res) =>{
         return res.status(created).json(response);
 
     } catch (error) {
+        // switch (error.name) {
+            
+        // }
         return res.status(bad).send({
             message : error.message
         });
@@ -107,7 +101,7 @@ const pertunjukanupdate = async(req,res) =>{
  
          const updateimage = cloudinaryResponse.secure_url;
 
-         const { judul, jenis, content, provinsi, linkyt } = req.body;
+         const { judul, jenis, content, provinsi } = req.body;
          const imagepertunjukan = updateimage;
 
          const pertunjukan = await Pertunjukan.findByIdAndUpdate({
@@ -117,8 +111,7 @@ const pertunjukanupdate = async(req,res) =>{
                 jenis : jenis,
                 content : content,
                 provinsi : provinsi,
-                image : imagepertunjukan,
-                linkyt : linkyt
+                image : imagepertunjukan
             });
 
             if(!pertunjukan){

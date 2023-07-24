@@ -10,13 +10,13 @@ const provinsiSchema = new Schema({
           return new ObjectId().toString()
       }
     },
-    // pertunjukans: { 
-    //     type: Schema.Types.ObjectId, 
-    //     ref: "pertunjukan" 
-    // },
     nama : {
         type : String,
         required : [true, "please add provinsi"],
+    },
+    pertunjukans: { 
+        type: Schema.Types.ObjectId, 
+        ref: "pertunjukan" 
     },
 })
 

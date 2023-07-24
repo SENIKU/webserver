@@ -24,7 +24,7 @@ const getiduser = async (req, res) =>{
     try {
         const users = await User.findById({
             _id : req.params.id
-        }).select('fullname').select('username').select('email').select('role').select('imgprofile').select('created_at');
+        }).select('fullname').select('username').select('email').select('imgprofile').select('created_at');
 
         if(!users){
             return res.status(notfound).json({
@@ -69,7 +69,16 @@ const updateuser = async(req, res) =>{
         const { fullname, username} = req.body;
         const imgprofile = updateimgprofile;
         
-       
+        const existedusername = await User.findOne({
+            username : req.body.username 
+         });
+
+        if(existedusername){
+            return res.status(bad).json({
+                message : "Username already exist"
+            });
+        }
+        
         const users = await User.findByIdAndUpdate({
             _id : req.params.id
         },{

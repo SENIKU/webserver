@@ -4,8 +4,8 @@ require("dotenv").config();
 
 const auth = async(req, res, next) =>{
     let response = {};
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const token = req.header('authorization');
+
 
     if(token == null){
         response ={ 
