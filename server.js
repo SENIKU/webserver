@@ -9,6 +9,7 @@ const { provinsiall, provinsicreate } = require("./routes/routeprovinsi");
 const { pertunjukanall, createpertunjukan, pertunjukanbyid, deletepertunjukan, updatepertunjukan, commentcreate } = require("./routes/routepertunjukan");
 const { Server} = require("socket.io");
 const { commentget } = require("./routes/routecomment");
+const { musikbyid, createmusik, updatemusik, deletemusik, musikall, commentcreatemusik } = require("./routes/musikroute");
 
 const app = express();
 const port = process.env.PORT;
@@ -37,6 +38,8 @@ app.use(provinsiall, provinsicreate);
 // pertunjukan
 app.use(pertunjukanall, pertunjukanbyid , createpertunjukan, updatepertunjukan, deletepertunjukan, commentcreate);
 
+// musik
+app.use(musikall, musikbyid, createmusik, updatemusik, deletemusik , commentcreatemusik);
 // comment pertunjukan
 app.use(commentget);
 const server = app.listen(port,'0.0.0.0', function(){

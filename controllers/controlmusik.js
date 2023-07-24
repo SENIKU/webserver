@@ -1,18 +1,19 @@
 const { cloudinaryconf } = require('../config/cloudinary');
-const { Pertunjukan } = require('../models/pertunjukan');
-const { bad, ok, created, notfound } = require('./statuscode');
+const { Musik } = require('../models/musik');
+const { bad, ok, created, notfound, servererror } = require('./statuscode');
 require('dotenv').config();
 
 const cloudinary = require('cloudinary').v2;
 
 cloudinaryconf();
 
-const getallpertunjukan = async(req,res) =>{
+const getallmusik = async(req,res) =>{
     try {
-        const pertunjukan = await Pertunjukan.find({})
+        const musik = await Musik.find({})
         .populate('users', "fullname -_id");
         const response = {
-            data : pertunjukan
+            total : musik.length,
+            data : musik
         }
         return res.status(ok).json(response)
         ;
@@ -23,20 +24,20 @@ const getallpertunjukan = async(req,res) =>{
     }
 }
 
-const getidpertunjukan = async(req,res) =>{
+const getidmusik = async(req,res) =>{
     try {
-        const pertunjukan = await Pertunjukan.findById({
+        const musik = await Musik.findById({
             _id : req.params.id
         });
 
-        if(!pertunjukan){
+        if(!musik){
             return res.status(notfound).json({
-                message : "Pertunjukan not Found"
+                message : "Musik not Found"
             });
         };
 
         const response = {
-            data : pertunjukan
+            data : musik
         }
         return res.status(ok).json(response);
 
@@ -47,52 +48,52 @@ const getidpertunjukan = async(req,res) =>{
     }
 }
 
-const pertunjukancreate = async(req,res) =>{
+const musikcreate = async(req,res) =>{
     try {
         const _base64 = Buffer.from(req.files.image.data, 'base64').toString('base64');
         const base64 = `data:image/jpeg;base64,${_base64}`;
         
-        const cloudinaryResponse = await cloudinary.uploader.upload(base64,{folder: "seniku/pertunjukan", public_id: new Date().getTime() });
+        const cloudinaryResponse = await cloudinary.uploader.upload(base64,{folder: "seniku/musik", public_id: new Date().getTime() });
 
-        const imgpertunjukan = cloudinaryResponse.secure_url;
+        const imgmusik = cloudinaryResponse.secure_url;
 
-        const pertunjukan = await Pertunjukan.create({
+        const musik = await Musik.create({
             judul : req.body.judul,
             jenis : req.body.jenis,
             content : req.body.content,
-            provinsis : req.body.provinsis,
-            image : imgpertunjukan,
+            lyrics : req.body.lyrics,
+            provinsi : req.body.provinsi,
+            linkyt : req.body.linkyt,
+            referensi : req.body.referensi,
+            image : imgmusik,
         });
 
         const response = {
-            message : "Pertunjukan berhasil ditambahkan",
-            data : pertunjukan
+            message : "Musik berhasil ditambahkan",
+            data : musik
         }
 
         return res.status(created).json(response);
 
     } catch (error) {
-        // switch (error.name) {
-            
-        // }
-        return res.status(bad).send({
+        return res.status(servererror).send({
             message : error.message
         });
     }
 }
 
-const pertunjukanupdate = async(req,res) =>{
+const musikupdate = async(req,res) =>{
     try {
-        const pertunjukanimg = await Pertunjukan.findById({
+        const musikimg = await Musik.findById({
             _id : req.params.id
         });
 
          // cloudinary
-         const imgPublicIdSplit = pertunjukanimg.image.split('/');
+         const imgPublicIdSplit = musikimg.image.split('/');
 
          const imgPublicId = imgPublicIdSplit[imgPublicIdSplit.length - 1];
          const publicId = imgPublicId.split('.')[0];
-         const updateid = `seniku/pertunjukan/${publicId}`;
+         const updateid = `seniku/musik/${publicId}`;
        
          const _base64 = Buffer.from(req.files.image.data, 'base64').toString('base64');
          const base64 = `data:image/jpeg;base64,${_base64}`;
@@ -101,29 +102,32 @@ const pertunjukanupdate = async(req,res) =>{
  
          const updateimage = cloudinaryResponse.secure_url;
 
-         const { judul, jenis, content, provinsi } = req.body;
-         const imagepertunjukan = updateimage;
+         const { judul, jenis, content, provinsi, linkyt, referensi, lyrics} = req.body;
+         const imagemusik = updateimage;
 
-         const pertunjukan = await Pertunjukan.findByIdAndUpdate({
+         const musik = await Musik.findByIdAndUpdate({
                 _id : req.params.id
             },{
                 judul : judul,
                 jenis : jenis,
                 content : content,
+                lyrics : lyrics,
                 provinsi : provinsi,
-                image : imagepertunjukan
+                linkyt : linkyt,
+                referensi : referensi,
+                image : imagemusik
             });
 
-            if(!pertunjukan){
+            if(!musik){
                 return res.status(notfound).json({
-                    message : "Pertunjukan not Found"
+                    message : "Musik not Found"
                 });
             };
 
-            if(pertunjukan){
+            if(musik){
                 return res.status(ok).json({
-                    message : "Pertunjukan berhasil diupdate",
-                    data : pertunjukan
+                    message : "Musik berhasil diupdate",
+                    data : musik
                 });
             }
     } catch (error) {
@@ -133,33 +137,33 @@ const pertunjukanupdate = async(req,res) =>{
     }
 }
 
-const pertunjukandelete = async(req,res) =>{
+const musikdelete = async(req,res) =>{
     try {
-         const pertunjukan = await Pertunjukan.findOne({
+         const musik = await Musik.findOne({
             _id : req.params.id
         });
 
-        if(!pertunjukan){
+        if(!musik){
             return res.status(notfound).json({
-                message : "Pertunjukan not Found"
+                message : "Musik not Found"
             });
         };
 
           // hapus cloudinary
-        const imgPublicIdSplit = pertunjukan.image.split('/');
+        const imgPublicIdSplit = musik.image.split('/');
         
         const imgPublicId = imgPublicIdSplit[imgPublicIdSplit.length - 1];
         const publicId = imgPublicId.split('.')[0];
         
         // delete img olahraga from cloudinary
-        const hapusimg = await cloudinary.uploader.destroy(`seniku/pertunjukan/${publicId}`,  {folder: `seniku/pertunjukan/${publicId}`});
+        const hapusimg = await cloudinary.uploader.destroy(`seniku/musik/${publicId}`,  {folder: `seniku/musik/${publicId}`});
 
-        const pertunjukandelete = await Pertunjukan.deleteOne({
+        const musikdelete = await Musik.deleteOne({
             _id : req.params.id
         });
-        if(pertunjukandelete){
+        if(musikdelete){
             return res.status(ok).json({
-                message : "Pertunjukan berhasil dihapus",
+                message : "musik berhasil dihapus",
                 messageimg : hapusimg
             });
         }
@@ -172,9 +176,9 @@ const pertunjukandelete = async(req,res) =>{
 
 }
 module.exports = {
-    getallpertunjukan,
-    getidpertunjukan,
-    pertunjukancreate,
-    pertunjukanupdate,
-    pertunjukandelete,
+    getallmusik,
+    getidmusik,
+    musikcreate,
+    musikupdate,
+    musikdelete
 }

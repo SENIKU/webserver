@@ -20,6 +20,7 @@ const getallpertunjukan = async(req,res) =>{
         .populate("comments.users", "fullname imgprofile");
 
         const response = {
+            total: pertunjukan.length,
             data : pertunjukan
         }
         return res.status(ok).json(response)
@@ -70,6 +71,7 @@ const pertunjukancreate = async(req,res) =>{
             content : req.body.content,
             provinsi : req.body.provinsi,
             linkyt : req.body.linkyt,
+            referensi : req.body.referensi,
             image : imgpertunjukan
         });
 
@@ -107,7 +109,7 @@ const pertunjukanupdate = async(req,res) =>{
  
          const updateimage = cloudinaryResponse.secure_url;
 
-         const { judul, jenis, content, provinsi, linkyt } = req.body;
+         const { judul, jenis, content, provinsi, linkyt, referensi } = req.body;
          const imagepertunjukan = updateimage;
 
          const pertunjukan = await Pertunjukan.findByIdAndUpdate({
@@ -117,8 +119,9 @@ const pertunjukanupdate = async(req,res) =>{
                 jenis : jenis,
                 content : content,
                 provinsi : provinsi,
-                image : imagepertunjukan,
-                linkyt : linkyt
+                linkyt : linkyt,
+                referensi : referensi,
+                image : imagepertunjukan
             });
 
             if(!pertunjukan){

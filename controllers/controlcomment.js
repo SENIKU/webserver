@@ -1,3 +1,4 @@
+const { Musik } = require('../models/musik');
 const { Pertunjukan } = require('../models/pertunjukan');
 const { User } = require('../models/users');
 const { servererror, notfound, bad, created } = require('./statuscode');
@@ -46,6 +47,49 @@ const createcomment = async(req, res)=>{
     }
 }
 
+const createcommentmusik = async(req, res)=>{
+    try {
+        const musik = await Musik.findById({
+            _id : req.params.id
+        });
+
+        if(!musik){
+            return res.status(notfound).json({
+                message : "Musik not Found"
+            });
+        }
+        const users = await User.findById(req.user.id);
+
+        if(!users){
+            return res.status(notfound).json({
+                message : "user not Found"
+            });
+        };
+
+        if(!req.body.comment){
+            return res.status(bad).json({
+                message : "Please insert comment"
+            });
+        }
+
+        musik.comments.push({
+            users : users._id,
+            comment : req.body.comment,
+            createdAt : Date.now(),
+        });
+        await musik.save();
+        
+        res.status(created).json({
+            status : "successfully",
+            message : "comment add successfully",
+        });
+    } catch (error) {
+        return res.status(servererror).send({
+            message : error.message
+        });
+    }
+}
+
 const getcomment = async(req, res)=>{
     try {
         const pertunjukan = await Pertunjukan.aggregate([
@@ -58,6 +102,7 @@ const getcomment = async(req, res)=>{
                 provinsi : 1,
                 image : 1,
                 linkyt : 1,
+                referensi : 1,
                 date : 1,
                 commentCount: { $size: { $ifNull: ["$comments", []] } },
             },
@@ -92,5 +137,6 @@ const getcomment = async(req, res)=>{
 }
 module.exports ={
     createcomment,
+    createcommentmusik,
     getcomment
 }

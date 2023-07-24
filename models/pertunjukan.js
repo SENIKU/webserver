@@ -38,6 +38,9 @@ const PertunjukanSchema = new Schema({
     linkyt: {
         type: String,
     },
+    referensi : {
+        type : String
+    },
     comments : [{
         users : {
             type: mongoose.Schema.Types.ObjectId,

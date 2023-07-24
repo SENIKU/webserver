@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const ObjectId = mongoose.Types.ObjectId;
 
-const PertunjukanSchema = new Schema({
+const musikSchema = new Schema({
     _id : {
       type: String,
       default: function () {
@@ -15,26 +15,23 @@ const PertunjukanSchema = new Schema({
         trim: true,
         required: [true, "Please add judul"],
     },
-    jenis : {
-        type: String,
-        trim: true,
-        required: [true, "Please add jenis"],
-        // enum: ["Coffee", "Tea", "Water"],
-    },
-   
     content : {
         type: String,
         required: [true, "Please add content"],
     },
-    // provinsi : {
-    //     type: String,
-    //     trim: true,
-    //     required: [true, "Please add provinsi"],
-    // },
-    provinsis: { 
-        type: Schema.Types.ObjectId, 
-        ref: "provinsi" 
+    lyrics : {
+        type: String,
+        required: [true, "Please add lyrics"],
     },
+    provinsi : {
+        type: String,
+        trim: true,
+        required: [true, "Please add provinsi"],
+    },
+    // provinsis: { 
+    //     type: Schema.Types.ObjectId, 
+    //     ref: "provinsi" 
+    // },
     suka : {
         type : Boolean,
     },
@@ -43,6 +40,9 @@ const PertunjukanSchema = new Schema({
     },
     linkyt: {
         type: String,
+    },
+    referensi : {
+        type : String
     },
     comments : [{
         user : {
@@ -65,8 +65,8 @@ const PertunjukanSchema = new Schema({
   }
 )
 
-const Pertunjukan = mongoose.model("pertunjukan", PertunjukanSchema);
+const Musik = mongoose.model("musik", musikSchema);
 
 module.exports = {
-    Pertunjukan
+    Musik
 }
