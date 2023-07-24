@@ -66,6 +66,12 @@ const register = async(req, res) =>{
             });
         }
 
+        // jika password tidak sampai 6 karakter
+        if(password.length < 6){
+            return res.status(bad).json({
+                message : "Password must be at least 6 characters"
+            });
+        }
         // jika password tidak sama
         if(password !== confPassword){
             return res.status(bad).json({
@@ -94,7 +100,7 @@ const register = async(req, res) =>{
             imgprofile : imgprofile
         });
 
-        const finduser = await User.findOne(newUser).select('fullname').select('username').select('email').select('role').select('imgprofile').select('created_at');
+        const finduser = await User.findOne(newUser).select('fullname').select('username').select('email').select('imgprofile').select('created_at');
 
         res.status(created).json({
             message : "create akun successfuly",
@@ -131,6 +137,7 @@ const login = async(req, res) =>{
 
     const token = jwt.sign({
         sub : users.id,
+        id : users.id,
         iss : 'seniku',
         aud : audience,
         exp : parseInt(((new Date()).getTime() / 1000) + 5 * 60 * 60),
@@ -138,7 +145,13 @@ const login = async(req, res) =>{
 
     return res.status(ok).json({
         message : "Login Success",
-        token : token
+        token : token,
+        users : {
+            id : users.id,
+            name : users.fullname,
+            username : users.username,
+            imgprofile : users.imgprofile,
+        }
     });
 }
 

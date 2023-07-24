@@ -18,6 +18,8 @@ const dbs = process.env.MONGODB_URL;
 // }
 const connectDBs = async() =>{
     mongoose.connect(dbs, {
+        dbName: process.env.MONGODB_DBNAME,
+        retryWrites: true,
         useNewUrlParser: true,
         useUnifiedTopology: true,
     });

@@ -35,8 +35,11 @@ const PertunjukanSchema = new Schema({
     image: {
         type: String,
     },
+    linkyt: {
+        type: String,
+    },
     comments : [{
-        user : {
+        users : {
             type: mongoose.Schema.Types.ObjectId,
             ref: "users",
         },
@@ -47,7 +50,8 @@ const PertunjukanSchema = new Schema({
             type : Date,
             default : Date.now
         }
-    }],
+    },
+],
 },{
     timestamps: {
       createdAt: 'created_at', // Use `created_at` to store the created date
