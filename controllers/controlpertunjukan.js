@@ -20,6 +20,7 @@ const getallpertunjukan = async(req,res) =>{
         .populate("comments.users", "fullname imgprofile");
 
         const response = {
+            total: pertunjukan.length,
             data : pertunjukan
         }
         return res.status(ok).json(response)

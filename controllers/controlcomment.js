@@ -102,6 +102,7 @@ const getcomment = async(req, res)=>{
                 provinsi : 1,
                 image : 1,
                 linkyt : 1,
+                referensi : 1,
                 date : 1,
                 commentCount: { $size: { $ifNull: ["$comments", []] } },
             },

@@ -19,6 +19,10 @@ const musikSchema = new Schema({
         type: String,
         required: [true, "Please add content"],
     },
+    lyrics : {
+        type: String,
+        required: [true, "Please add lyrics"],
+    },
     provinsi : {
         type: String,
         trim: true,

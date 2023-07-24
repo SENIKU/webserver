@@ -12,6 +12,7 @@ const getallmusik = async(req,res) =>{
         const musik = await Musik.find({})
         .populate('users', "fullname -_id");
         const response = {
+            total : musik.length,
             data : musik
         }
         return res.status(ok).json(response)
@@ -60,6 +61,7 @@ const musikcreate = async(req,res) =>{
             judul : req.body.judul,
             jenis : req.body.jenis,
             content : req.body.content,
+            lyrics : req.body.lyrics,
             provinsi : req.body.provinsi,
             linkyt : req.body.linkyt,
             referensi : req.body.referensi,
@@ -100,7 +102,7 @@ const musikupdate = async(req,res) =>{
  
          const updateimage = cloudinaryResponse.secure_url;
 
-         const { judul, jenis, content, provinsi, linkyt, referensi} = req.body;
+         const { judul, jenis, content, provinsi, linkyt, referensi, lyrics} = req.body;
          const imagemusik = updateimage;
 
          const musik = await Musik.findByIdAndUpdate({
@@ -109,6 +111,7 @@ const musikupdate = async(req,res) =>{
                 judul : judul,
                 jenis : jenis,
                 content : content,
+                lyrics : lyrics,
                 provinsi : provinsi,
                 linkyt : linkyt,
                 referensi : referensi,
