@@ -15,6 +15,7 @@ const app = express();
 const port = process.env.PORT;
 
 app.use(cors({
+    credentials:true,
     origin : true
 }));
 // kegunaannnya biar bisa menggunakan form-data
@@ -48,7 +49,8 @@ const server = app.listen(port,'0.0.0.0', function(){
 
 const io = new Server(server, {
     cors : {
-        origin : "*"
+        credentials:true,
+        origin : true
     },
 });
 
