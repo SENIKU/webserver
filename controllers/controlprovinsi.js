@@ -4,7 +4,7 @@ require("dotenv").config();
 
 const getallprovinsi = async (req, res) =>{
     try {
-        const provinsi = await Provinsi.find({}); //.populate('pertunjukans', "judul -_id");
+        const provinsi = await Provinsi.find({}).populate('musik', "judul -_id");
         const response = {
             data : provinsi
         }

@@ -9,10 +9,18 @@ cloudinaryconf();
 
 const getallmusik = async(req,res) =>{
     try {
-        const musik = await Musik.find({})
-        .populate('users', "fullname -_id");
+        const { search } = req.query;
+        let query = {};
+        if (search) {
+            query.title = { $regex: search, $options: `i` };
+        }
+
+        const musik = await Musik.find(query)
+        .sort({ date: -1 })
+        .populate("comments.users", "username imgprofile");
+
         const response = {
-            total : musik.length,
+            total: musik.length,
             data : musik
         }
         return res.status(ok).json(response)
@@ -26,9 +34,9 @@ const getallmusik = async(req,res) =>{
 
 const getidmusik = async(req,res) =>{
     try {
-        const musik = await Musik.findById({
-            _id : req.params.id
-        });
+        const musik = await Musik.findById(req.params.id)
+        .sort({ date: -1 })
+        .populate("comments.users", "username imgprofile");
 
         if(!musik){
             return res.status(notfound).json({
@@ -50,22 +58,22 @@ const getidmusik = async(req,res) =>{
 
 const musikcreate = async(req,res) =>{
     try {
-        const _base64 = Buffer.from(req.files.image.data, 'base64').toString('base64');
-        const base64 = `data:image/jpeg;base64,${_base64}`;
+        // const _base64 = Buffer.from(req.files.image.data, 'base64').toString('base64');
+        // const base64 = `data:image/jpeg;base64,${_base64}`;
         
-        const cloudinaryResponse = await cloudinary.uploader.upload(base64,{folder: "seniku/musik", public_id: new Date().getTime() });
+        // const cloudinaryResponse = await cloudinary.uploader.upload(base64,{folder: "seniku/musik", public_id: new Date().getTime() });
 
-        const imgmusik = cloudinaryResponse.secure_url;
+        // const imgmusik = cloudinaryResponse.secure_url;
 
         const musik = await Musik.create({
             judul : req.body.judul,
             jenis : req.body.jenis,
             content : req.body.content,
+            ciptaan : req.body.ciptaan,
             lyrics : req.body.lyrics,
             provinsi : req.body.provinsi,
             linkyt : req.body.linkyt,
             referensi : req.body.referensi,
-            image : imgmusik,
         });
 
         const response = {
@@ -84,26 +92,26 @@ const musikcreate = async(req,res) =>{
 
 const musikupdate = async(req,res) =>{
     try {
-        const musikimg = await Musik.findById({
-            _id : req.params.id
-        });
+        // const musikimg = await Musik.findById({
+        //     _id : req.params.id
+        // });
 
          // cloudinary
-         const imgPublicIdSplit = musikimg.image.split('/');
+        //  const imgPublicIdSplit = musikimg.image.split('/');
 
-         const imgPublicId = imgPublicIdSplit[imgPublicIdSplit.length - 1];
-         const publicId = imgPublicId.split('.')[0];
-         const updateid = `seniku/musik/${publicId}`;
+        //  const imgPublicId = imgPublicIdSplit[imgPublicIdSplit.length - 1];
+        //  const publicId = imgPublicId.split('.')[0];
+        //  const updateid = `seniku/musik/${publicId}`;
        
-         const _base64 = Buffer.from(req.files.image.data, 'base64').toString('base64');
-         const base64 = `data:image/jpeg;base64,${_base64}`;
+        //  const _base64 = Buffer.from(req.files.image.data, 'base64').toString('base64');
+        //  const base64 = `data:image/jpeg;base64,${_base64}`;
          
-         const cloudinaryResponse = await cloudinary.uploader.upload(base64, { public_id: updateid, overwrite: true });
+        //  const cloudinaryResponse = await cloudinary.uploader.upload(base64, { public_id: updateid, overwrite: true });
  
-         const updateimage = cloudinaryResponse.secure_url;
+        //  const updateimage = cloudinaryResponse.secure_url;
 
-         const { judul, jenis, content, provinsi, linkyt, referensi, lyrics} = req.body;
-         const imagemusik = updateimage;
+         const { judul, jenis, content, ciptaan, provinsi, linkyt, referensi, lyrics} = req.body;
+        //  const imagemusik = updateimage;
 
          const musik = await Musik.findByIdAndUpdate({
                 _id : req.params.id
@@ -111,11 +119,11 @@ const musikupdate = async(req,res) =>{
                 judul : judul,
                 jenis : jenis,
                 content : content,
+                ciptaan : ciptaan,
                 lyrics : lyrics,
                 provinsi : provinsi,
                 linkyt : linkyt,
                 referensi : referensi,
-                image : imagemusik
             });
 
             if(!musik){
@@ -150,13 +158,13 @@ const musikdelete = async(req,res) =>{
         };
 
           // hapus cloudinary
-        const imgPublicIdSplit = musik.image.split('/');
+        // const imgPublicIdSplit = musik.image.split('/');
         
-        const imgPublicId = imgPublicIdSplit[imgPublicIdSplit.length - 1];
-        const publicId = imgPublicId.split('.')[0];
+        // const imgPublicId = imgPublicIdSplit[imgPublicIdSplit.length - 1];
+        // const publicId = imgPublicId.split('.')[0];
         
-        // delete img olahraga from cloudinary
-        const hapusimg = await cloudinary.uploader.destroy(`seniku/musik/${publicId}`,  {folder: `seniku/musik/${publicId}`});
+        // // delete img olahraga from cloudinary
+        // const hapusimg = await cloudinary.uploader.destroy(`seniku/musik/${publicId}`,  {folder: `seniku/musik/${publicId}`});
 
         const musikdelete = await Musik.deleteOne({
             _id : req.params.id
@@ -164,7 +172,6 @@ const musikdelete = async(req,res) =>{
         if(musikdelete){
             return res.status(ok).json({
                 message : "musik berhasil dihapus",
-                messageimg : hapusimg
             });
         }
     } catch (error) {
