@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const ObjectId = mongoose.Types.ObjectId;
 
-const musikSchema = new Schema({
+const EventSchema = new Schema({
     _id : {
       type: String,
       default: function () {
@@ -15,44 +15,29 @@ const musikSchema = new Schema({
         trim: true,
         required: [true, "Please add judul"],
     },
-    jenis : {
+    deskripsi : {
         type: String,
         trim: true,
-        required: [true, "Please add Jenis"],
+        required: [true, "Please add jenis"],
     },
-    ciptaan : {
+    image : {
         type: String,
+    },
+    jadwal : {
+        type : Date,
         trim: true,
-        required: [true, "Please add ciptaan"],
+        required: [true, "Please add jenis"],
     },
-    content : {
-        type: String,
-        required: [true, "Please add content"],
-    },
-    lyrics : {
-        type: String,
-        required: [true, "Please add lyrics"],
-    },
-    provinsi : {
+    lokasi : {
         type: String,
         trim: true,
         required: [true, "Please add provinsi"],
     },
-    // provinsis: { 
-    //     type: Schema.Types.ObjectId, 
-    //     ref: "provinsi" 
-    // },
-    suka : {
-        type : Boolean,
+    orang : {
+        type : String,
     },
-    image: {
+    tiket: {
         type: String,
-    },
-    linkyt: {
-        type: String,
-    },
-    referensi : {
-        type : String
     },
     comments : [{
         users : {
@@ -66,7 +51,8 @@ const musikSchema = new Schema({
             type : Date,
             default : Date.now
         }
-    }],
+    },
+],
 },{
     timestamps: {
       createdAt: 'created_at', // Use `created_at` to store the created date
@@ -75,8 +61,8 @@ const musikSchema = new Schema({
   }
 )
 
-const Musik = mongoose.model("musik", musikSchema);
+const Event = mongoose.model("event", EventSchema);
 
 module.exports = {
-    Musik
+    Event
 }

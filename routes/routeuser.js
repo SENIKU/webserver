@@ -8,7 +8,7 @@ const app = express();
 app.get("/", (req, res) => res.send("Welcome to  API seniku"));
 const userall = app.get("/api/users", auth, roleadmin, getalluser);
 const userid = app.get("/api/users/:id", auth, getiduser);
-const userupdate = app.put("/api/users/:id" ,  updateuser);
+const userupdate = app.put("/api/users/update" , auth,updateuser);
 const userdelete = app.delete("/api/users/:id" , auth, roleadmin, deleteuser);
 
 module.exports = {

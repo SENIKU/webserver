@@ -124,7 +124,7 @@ const login = async(req, res) =>{
      });
 
     if(!users){
-        res.status(notfound).json({
+        return res.status(notfound).json({
             message : "User not Found"
         })
     };

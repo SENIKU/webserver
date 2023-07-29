@@ -10,10 +10,7 @@ const validateEmail = function(email) {
 
 const UserSchema = new Schema({
     _id : {
-      type: String,
-      default: function () {
-          return new ObjectId().toString()
-      }
+       type: Schema.Types.ObjectId, auto: true
     },
     fullname : {
         type : String,

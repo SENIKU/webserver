@@ -47,27 +47,41 @@ const getiduser = async (req, res) =>{
 const updateuser = async(req, res) =>{
 
     try {
- 
-        const usersimg = await User.findById({
-            _id : req.params.id
-        });
+        const {fullname, username} = req.body;
 
-        // cloudinary
-        const imgPublicIdSplit = usersimg.imgprofile.split('/');
-
-        const imgPublicId = imgPublicIdSplit[imgPublicIdSplit.length - 1];
-        const publicId = imgPublicId.split('.')[0];
-        const updateid = `seniku/profile/${publicId}`;
-      
-        const _base64 = Buffer.from(req.files.imgprofile.data, 'base64').toString('base64');
-        const base64 = `data:image/jpeg;base64,${_base64}`;
+        if (!fullname && !username && !req.files) {
+            return res.status(400).json({
+              status: "failed",
+              message: "Please update at least one data",
+            });
+          }
+          const dataUser = {
+            fullname: req.body.fullname,
+            username: req.body.username,
+          };
         
-        const cloudinaryResponse = await cloudinary.uploader.upload(base64,{ public_id: updateid, overwrite: true });
+        //ketika data req.user.id diambil dari middleware auth
+        const usersimg = await User.findById({
+            _id : req.user.id 
+        });
+        
+        // cloudinary
+        if(req.files){
+            const imgPublicIdSplit = usersimg.imgprofile.split('/');
 
-        const updateimgprofile = cloudinaryResponse.secure_url;
-
-        const { fullname, username} = req.body;
-        const imgprofile = updateimgprofile;
+            const imgPublicId = imgPublicIdSplit[imgPublicIdSplit.length - 1];
+            const publicId = imgPublicId.split('.')[0];
+            const updateid = `seniku/profile/${publicId}`;
+          
+            const _base64 = Buffer.from(req.files.imgprofile.data, 'base64').toString('base64');
+            const base64 = `data:image/jpeg;base64,${_base64}`;
+            
+            const cloudinaryResponse = await cloudinary.uploader.upload(base64,{ public_id: updateid, overwrite: true });
+    
+            const updateimgprofile = cloudinaryResponse.secure_url;
+            
+            dataUser.imgprofile = updateimgprofile;
+        }
         
         const existedusername = await User.findOne({
             username : req.body.username 
@@ -79,26 +93,20 @@ const updateuser = async(req, res) =>{
             });
         }
         
-        const users = await User.findByIdAndUpdate({
-            _id : req.params.id
-        },{
-            fullname : fullname,
-            username : username,
-            imgprofile : imgprofile
-        }, {
+        const user = await User.findByIdAndUpdate(req.user.id, dataUser, {
             new: true,
             runValidators: true,
-        }).select('fullname').select('username').select('email').select('role').select('imgprofile');
+        }).select('fullname').select('username').select('email').select('imgprofile');
 
-        if(!users){
+        if(!user){
             return res.status(notfound).json({
                 message : "User not Found"
             });
         }
-        if(users){
+        if(user){
             return res.status(created).json({
                 message : "Update Users success",
-                data : users
+                data : user
             });
         }
     } catch (error) {
