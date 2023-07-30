@@ -61,14 +61,16 @@ const eventcreate = async(req,res) =>{
         const _base64 = Buffer.from(req.files.image.data, 'base64').toString('base64');
         const base64 = `data:image/jpeg;base64,${_base64}`;
         
-        const cloudinaryResponse = await cloudinary.uploader.upload(base64,{folder: "seniku/event", public_id: new Date().getTime() });
+        const cloudinaryResponse = await cloudinary.uploader.upload(base64,{folder: "seniku/events", public_id: new Date().getTime() });
 
         const imgevent = cloudinaryResponse.secure_url;
         const event = await Event.create({
             judul : req.body.judul,
             deskripsi : req.body.deskripsi,
+            jenis : req.body.jenis,
             jadwal : new Date(req.body.jadwal),
             lokasi : req.body.lokasi,
+            linkmaps : req.body.linkmaps,
             orang : req.body.orang,
             tiket : req.body.tiket,
             image : imgevent
@@ -99,7 +101,7 @@ const eventupdate = async(req,res) =>{
 
          const imgPublicId = imgPublicIdSplit[imgPublicIdSplit.length - 1];
          const publicId = imgPublicId.split('.')[0];
-         const updateid = `seniku/event/${publicId}`;
+         const updateid = `seniku/events/${publicId}`;
        
          const _base64 = Buffer.from(req.files.image.data, 'base64').toString('base64');
          const base64 = `data:image/jpeg;base64,${_base64}`;
@@ -108,7 +110,7 @@ const eventupdate = async(req,res) =>{
  
          const updateimage = cloudinaryResponse.secure_url;
 
-         const { judul, deskripsi, lokasi, orang, tiket } = req.body;
+         const { judul, deskripsi, jenis, linkmaps, lokasi, orang, tiket } = req.body;
          const jadwal = new Date(req.body.jadwal);
          const imgevent = updateimage;
 
@@ -117,8 +119,10 @@ const eventupdate = async(req,res) =>{
             },{
                 judul : judul,
                 deskripsi : deskripsi,
+                jenis : jenis,
                 jadwal : jadwal,
                 lokasi : lokasi,
+                linkmaps : linkmaps,
                 orang : orang,
                 tiket : tiket,
                 image : imgevent
@@ -162,7 +166,7 @@ const eventdelete = async(req,res) =>{
         const publicId = imgPublicId.split('.')[0];
         
         // delete img olahraga from cloudinary
-        const hapusimg = await cloudinary.uploader.destroy(`seniku/event/${publicId}`,  {folder: `seniku/event/${publicId}`});
+        const hapusimg = await cloudinary.uploader.destroy(`seniku/events/${publicId}`,  {folder: `seniku/event/${publicId}`});
 
         const eventdelete = await event.deleteOne({
             _id : req.params.id

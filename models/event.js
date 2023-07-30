@@ -20,6 +20,9 @@ const EventSchema = new Schema({
         trim: true,
         required: [true, "Please add jenis"],
     },
+    jenis : {
+        type: String,
+    },
     image : {
         type: String,
     },
@@ -30,8 +33,9 @@ const EventSchema = new Schema({
     },
     lokasi : {
         type: String,
-        trim: true,
-        required: [true, "Please add provinsi"],
+    },
+    linkmaps : {
+        type: String,
     },
     orang : {
         type : String,
